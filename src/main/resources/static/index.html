@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试 EMQTT</title>
+    <script src="/js/mqtt.min.js"></script>
+    <script>
+        const WebSocket_URL = 'wss://baidu.com/mqtt';
+        // 连接选项
+        const options = {
+            // 超时时间
+            connectTimeout: 4000,
+            // 认证信息
+            clientId: 'emqx',
+            username: 'emqx',
+            password: 'emqx',
+            // 心跳时间
+            keepalive: 60,
+            clean: true,
+        };
+
+        const client = mqtt.connect(WebSocket_URL, options);
+
+        // 连接成功后初始化订阅
+        client.on('connect', () => {
+            console.log('Connected to', WebSocket_URL);
+
+            // 订阅主题
+            client.subscribe('hello', (err) => {
+                console.log(err || '订阅成功');
+            });
+
+            // 发布消息
+            client.publish('hello', 'Hello EMQ X', (err) => {
+                console.log(err || '发布成功');
+            });
+
+        });
+
+        client.on('error', (error) => {
+            console.log('连接失败:', error)
+        });
+
+        // 为 message 时间添加处理函数
+        client.on('message', (topic, message) => {
+            console.log('收到来自', topic, '的消息:', message.toString());
+            // 断开连接
+            //client.end();
+        });
+    </script>
+</head>
+<body>
+</body>
+</html>
